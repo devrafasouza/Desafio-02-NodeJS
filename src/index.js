@@ -15,7 +15,7 @@ function checksExistsUserAccount(request, response, next) {
   const user = users.find(user => user.username === username);
 
   if(!user){
-    return response.status(400).json({error: "Usuario não existe"});
+    return response.status(404).json({error: "Usuario não existe"});
   }
 
   request.user = user;
@@ -25,7 +25,15 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  const { user } = request;
+
+  const usuarioPodeCriarTodo = ((user.pro === true) || (user.todos.length < 10));
+
+  if(!usuarioPodeCriarTodo){
+    return response.status(403).json({error: "Usuario já atingiu o limite de todos"});
+  }
+
+  return next();
 }
 
 function checksTodoExists(request, response, next) {
