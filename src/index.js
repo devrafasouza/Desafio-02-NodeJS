@@ -37,7 +37,32 @@ function checksCreateTodosUserAvailability(request, response, next) {
 }
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
+  const { username } = request.headers;
+  const { id } = request.params;
+
+  const user = users.find((user) => user.username === username);
+
+  if(!user){
+    return response.status(404).json({error: "Usuario não existe"});
+  }
+
+  const validarId = validate(id, 4);
+
+  if(!validarId){
+    response.status(400).json({error: "O id informado não é valido"});
+  }
+
+  const idPerteceAUmTodo = user.todos.find(todo => todo.id === id);
+
+  if(!idPerteceAUmTodo){
+    response.status(404).json({error: "O id informado não pertence a um todo"});
+  }
+
+  request.user = user;
+  request.todo = idPerteceAUmTodo;
+
+  return next();
+  
 }
 
 function findUserById(request, response, next) {
