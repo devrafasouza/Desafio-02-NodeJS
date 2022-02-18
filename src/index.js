@@ -46,16 +46,16 @@ function checksTodoExists(request, response, next) {
     return response.status(404).json({error: "Usuario não existe"});
   }
 
-  const validarId = validate(id, 4);
+  const validarId = validate(id);
 
   if(!validarId){
-    response.status(400).json({error: "O id informado não é valido"});
+    return response.status(400).json({error: "O id informado não é valido"});
   }
 
   const idPerteceAUmTodo = user.todos.find(todo => todo.id === id);
 
   if(!idPerteceAUmTodo){
-    response.status(404).json({error: "O id informado não pertence a um todo"});
+    return response.status(404).json({error: "O id informado não pertence a um todo"});
   }
 
   request.user = user;
@@ -66,7 +66,17 @@ function checksTodoExists(request, response, next) {
 }
 
 function findUserById(request, response, next) {
-  // Complete aqui
+  const { id } = request.params;
+
+  const usuarioExiste = users.find(user => user.id === id);
+
+  if(!usuarioExiste) {
+    return response.status(404).json({error: "Usuario não existe"});
+  }
+
+  request.user = usuarioExiste;
+
+  return next();
 }
 
 app.post('/users', (request, response) => {
